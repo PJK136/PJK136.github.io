@@ -1,0 +1,3 @@
+[submodule "MapINSA"]
+	path = MapINSA
+	url = git@github.com:PJK136/MapINSA
