@@ -1,3 +1,8 @@
 [submodule "MapINSA"]
 	path = MapINSA
-	url = https://github.com/PJK136/MapINSA
+    url = https://github.com/PJK136/MapINSA
+
+[submodule "manga-search-engine"]
+	path = manga-search-engine
+	url = https://github.com/PJK136/manga-search-engine
+
