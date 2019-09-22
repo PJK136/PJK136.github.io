@@ -1,0 +1,165 @@
+<html>
+  <head>
+    <title>Aquarium</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <style>
+    body {
+	    background-image: url("https://image.noelshack.com/fichiers/2017/22/1496068947-fishtry.png");
+    }
+    h1 {
+	    text-align: center;
+    	font-family: 'Lucida Calligraphy', Gisha, Georgia, Geneva, sans-serif;
+	    color: #004d66;
+    	font-style:  italic;
+    }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="./data.js"></script> <!-- fichier utilisé pour le chargement des données graphiques -->
+    <script>
+        $(function() {
+            yAxis = [] //Liste des axes y
+            for (i = 0; i < MEASURE_SERIES.length; i++) { //Pour chaque série
+                MEASURE_SERIES[i].data.reverse(); // On inverse le tri de desc à asc
+                MEASURE_SERIES[i].yAxis = i; // On attribue l'axe y numéro i
+                if (i == 5) { //Même axe pour Luminosité P et S
+                    MEASURE_SERIES[i].yAxis = 0;
+                }
+                
+                yAxis.push({ // On crée l'axe y numéro i associé
+                        labels: {
+                            style: {
+                                color: Highcharts.getOptions().colors[i] // Avec la couleur correspondante
+                            }
+                        },
+                });
+            }
+            
+            diff = { // On crée la série diff
+                        name: "Différence Luminosité",
+                        data: [],
+                        yAxis: MEASURE_SERIES.length
+                   };
+            
+            // On la remplit
+            j = 0;
+            for (i = 0; i < MEASURE_SERIES[0].data.length; i++) { // On parcourt la série de luminosité P
+                while (MEASURE_SERIES[0].data[i][0] < MEASURE_SERIES[5].data[j][0]) { // Si la date de P est plus ancienne que S, on avant dans l'itération de P
+                    i++;
+                }
+                
+                while (MEASURE_SERIES[0].data[i][0] > MEASURE_SERIES[5].data[j][0]) { // Si la date de S est plus nouvelle que S, on avance dans l'itération de S
+                    j++;
+                }
+                
+                // On ajoute la différence lorsque les dates sont identiques
+                diff.data.push([MEASURE_SERIES[0].data[i][0], MEASURE_SERIES[0].data[i][1]-MEASURE_SERIES[5].data[j][1]]);
+            }
+            
+            // On ajoute la série diff aux séries à afficher
+            MEASURE_SERIES.push(diff);
+            
+            // On crée l'axe y associé
+            yAxis.push({
+                    labels: {
+                        style: {
+                            color: Highcharts.getOptions().colors[MEASURE_SERIES.length-1]
+                        }
+                    },
+            });
+            
+            Highcharts.setOptions({
+                global: {
+                    useUTC: false
+                },
+                lang: {
+                    loading: 'Chargement...',
+                    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                    weekdays: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                    shortMonths: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    thousandsSep: " ",
+                    decimalPoint: ','
+                }
+            });
+
+            var chart = Highcharts.stockChart('container', {
+                chart: {
+                    type: 'spline',
+                    backgroundColor: 'transparent'
+                },
+                title: {
+                    text: '',
+                },
+                rangeSelector: {
+                    selected: 4,
+                    buttons: [{ // boutons de sélection de l'intervalle montré sur le graphique
+                        type: 'hour',
+                        count: 1,
+                        text: '1h'
+                    }, {
+                        type: 'hour',
+                        count: 3,
+                        text: '3h'
+                    }, {
+                        type: 'hour',
+                        count: 6,
+                        text: '6h'
+                    }, {
+                        type: 'hour',
+                        count: 12,
+                        text: '12h'
+                    }, {
+                        type: 'day',
+                        count: 1,
+                        text: '1d'
+                    }, {
+                        type: 'day',
+                        count: 2,
+                        text: '2d'
+                    }, {
+                        type: 'day',
+                        count: 4,
+                        text: '4d'
+                    }, {
+                        type: 'week',
+                        count: 1,
+                        text: '1w'
+                    }, {
+                        type: 'month',
+                        count: 1,
+                        text: '1m'
+                    }, {
+                        type: 'all',
+                        text: 'All'
+                    }]
+                },
+                legend: {
+                    enabled: true,
+                },
+                xAxis: {
+                    type: 'datetime',
+                    ordinal: false,
+                    title: {
+                        text: 'Date'
+                    }
+                },
+                yAxis: yAxis,
+                plotOptions: {
+                    series: {
+                        gapSize: 10,
+                        showInNavigator: true
+                    }
+                },
+                series: MEASURE_SERIES
+            });
+        });
+
+    </script>
+  </head>
+  <body><br>
+    <h1>Aquarium - Données récentes</h1>
+    <div id="container" style="width:100vw; height:85vh;"></div>
+  </body>
+</html>
+
