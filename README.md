@@ -35,3 +35,7 @@
 [elice](https://github.com/PJK136/elice)
 
 [Yapalfeu](https://github.com/PJK136/WonderJamAutomne)
+
+## 2020-2023
+
+[View Dependent Decompression for Web-based Massive Triangle Meshes Visualisation](https://doi.org/10.2312/egp.20221015)
